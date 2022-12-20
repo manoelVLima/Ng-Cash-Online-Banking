@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  backend:
+    image: node:16.15
+
+    #configs adicionais
+    container_name: ng_cash_online_banking_backend
+    working_dir: /app
+    restart: on-failure
+
+    #iterativo
+    stdin_open: true
+    tty: true
+
+    #terminal do container
+    command: bash
+
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    ports:
+      - 3001:3001
+
+    environment:
+      HOST: localhost
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: online_banking
+
+    networks:
+      - ng_cash_online_banking
+
+  db:
+    image: postgres:15.1-alpine
+
+    #configs adicionais
+    container_name: ng_cash_online_banking_database
+    restart: on-failure
+
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: online_banking
+
+    ports:
+      - 5432:5432
+    networks:
+      - ng_cash_online_banking
+
+networks:
+  ng_cash_online_banking:
+    driver: bridge
