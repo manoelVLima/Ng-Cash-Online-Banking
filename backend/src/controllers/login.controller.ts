@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
 import LoginService from '../services/login.service';
-import { User } from '../types/user';
 import createToken from '../auth/jwtConfig';
+import { Login } from '../types/login';
 
 export default class LoginController {
   public service;
@@ -11,11 +12,11 @@ export default class LoginController {
   }
 
   public async login(req: Request, res: Response) {
-    const user = req.body as User;
+    const { username, password } = req.body as Login;
 
-    const result = await this.service.login(user); 
-    
-    if (!result) {
+    const result = await this.service.login({ username, password }); 
+
+    if (!result || !bcrypt.compareSync(password, result?.password)) {
       return res.status(404).json({ message: 'Username or Password invalids' });
     } 
 

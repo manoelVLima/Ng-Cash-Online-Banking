@@ -8,15 +8,15 @@ export default class UserModel {
     this.prisma = prisma;
   }
 
-  public async create(user: User): Promise<User> {
+  public async create({ password, username }: User): Promise<User> {
     const [result] = await prisma.$transaction([
       this.prisma.account.create({
         data: {
           balance: 100,
           User: {
             create: {
-              username: user.username,
-              password: user.password,
+              username,
+              password,
             },
           },
         },

@@ -1,4 +1,5 @@
 import LoginModel from '../models/login.model';
+import { Login } from '../types/login';
 import { User } from '../types/user';
 
 export default class LoginService {
@@ -8,8 +9,8 @@ export default class LoginService {
     this.model = new LoginModel();
   }
 
-  public async login({ password, username }: User):Promise<User | null> {
-    const user = await this.model.login({ password, username });
+  public async login({ username, password }: Login):Promise<User | null> {
+    const user = await this.model.login({ username, password });
     return user;
   }
 }

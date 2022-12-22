@@ -4,10 +4,7 @@ import { User } from '../types/user';
 
 const userSchema = Joi.object({
   username: Joi.string().min(3).required(),
-  password: Joi.string().min(8).regex(/(?=.*?[A-Z])(?=.*?[0-9])/).required()
-    .messages({
-      'string.pattern.base': 'Fields invalids',
-    }),
+  password: Joi.string().min(8).regex(/(?=.*?[A-Z])(?=.*?[0-9])/).required(),
 }).required();
 
 const validation = (req: Request, res: Response, next: NextFunction) => {

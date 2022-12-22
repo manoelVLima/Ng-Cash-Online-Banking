@@ -1,4 +1,5 @@
 import prisma from '../../prisma/client';
+import { Login } from '../types/login';
 import { User } from '../types/user';
 
 export default class LoginModel {
@@ -8,13 +9,10 @@ export default class LoginModel {
     this.prisma = prisma;
   }
 
-  public async login({ username, password }: User):Promise<User | null> {
+  public async login({ username }: Login):Promise<User | null> {
     const user = this.prisma.user.findFirst({
       where: {
-        AND: {
-          password,
-          username,
-        },
+        username,
       },
     });
     return user;
