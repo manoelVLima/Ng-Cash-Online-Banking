@@ -1,5 +1,7 @@
+/* eslint-disable max-lines-per-function */
 import prisma from '../../prisma/client';
-import { User } from '../types/user';
+import { Login } from '../types/login';
+import { CreateUser, User } from '../types/user';
 
 export default class UserModel {
   public prisma;
@@ -8,20 +10,34 @@ export default class UserModel {
     this.prisma = prisma;
   }
 
-  public async create({ password, username }: User): Promise<User> {
-    const [result] = await prisma.$transaction([
-      this.prisma.account.create({
-        data: {
-          balance: 100,
-          User: {
-            create: {
-              username,
-              password,
+  public async signUp({ password, username, balance }: CreateUser): Promise<User | null> {
+    try {
+      const [result] = await prisma.$transaction([
+        this.prisma.account.create({
+          data: {
+            balance,
+            User: {
+              create: {
+                username,
+                password,
+              },
             },
           },
-        },
-      }).User(),
-    ]);
-    return result;
+        }).User(),
+      ]);
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  public async signIn({ username }: Login):Promise<User | null> {
+    const user = this.prisma.user.findFirst({
+      where: {
+        username,
+      },
+    });
+    return user;
   }
 } 
