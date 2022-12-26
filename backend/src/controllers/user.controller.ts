@@ -20,7 +20,7 @@ export default class UserController {
     return res.status(201).json(result);
   }
 
-  public async signIn(req: Request, res: Response) {
+  public async signIn(req: Request, res: Response):Promise<Response> {
     const { username, password } = req.body as Login;
 
     const result = await this.service.signIn({ username, password }); 
@@ -33,5 +33,24 @@ export default class UserController {
     const token = createToken(result);
 
     return res.status(200).json({ id, token });
+  }
+
+  public async getUserAccount(req:Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+
+    const account = await this.service.getUserAccount(Number(id));
+
+    if (!account) res.status(404).json({ message: 'User not found!' });
+
+    return res.status(200).json(account);
+  }
+
+  public async newTransaction(req:Request, res: Response) {
+    const { id: userId } = req.params;
+    const id = Number(userId);
+        
+    const { username, value } = req.body;
+    const transaction = await this.service.newTransaction({ id, username, value });
+    return res.status(200).json(transaction);
   }
 }

@@ -11,7 +11,7 @@ const auth = (req:Request, res: Response, next: NextFunction) => {
 
   if (result.isError) return res.status(401).json({ message: result.message });
 
-  req.body = result;
+  req.user = result;
   return next();
 };
 export default auth;
