@@ -8,4 +8,16 @@ const createToken = ({ accountId, id, username }: Token) => {
   const token = jwt.sign(payload, secret, { algorithm: 'HS256', expiresIn: '1d' });
   return token;
 };
-export default createToken;
+const validateToken = (token: string) => {
+  try {
+    const payload = jwt.verify(token, secret);
+    return payload;
+  } catch (error) {
+    console.log(error);
+    return { isError: true, message: 'Invalid token' };
+  }
+};
+export {
+  createToken,
+  validateToken,
+};

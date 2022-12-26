@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import UserService from '../services/user.service';
 import { User } from '../types/user';
 import { Login } from '../types/login';
-import createToken from '../auth/jwtConfig';
+import { createToken } from '../auth/jwtConfig';
 
 export default class UserController {
   public service;
