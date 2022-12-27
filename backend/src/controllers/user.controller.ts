@@ -56,4 +56,14 @@ export default class UserController {
 
     return res.status(200).json(transaction);
   }
+
+  public async getTransactionsById(req:Request, res:Response) {
+    const { id } = req.params;
+
+    const transactions = await this.service.getTransactionsById(Number(id));
+
+    if (!transactions.length) return res.status(400).json({ message: 'No transactions found' });
+
+    return res.status(200).json(transactions);
+  }
 }

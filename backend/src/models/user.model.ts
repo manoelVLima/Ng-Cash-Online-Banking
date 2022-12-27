@@ -85,4 +85,15 @@ export default class UserModel {
       return null;
     }
   }
+
+  public async getTransactionsById(id: number) {
+    const debited = await this.prisma.transaction.findMany({
+      where: { debitedAccountId: id },
+    });
+    const credited = await this.prisma.transaction.findMany({
+      where: { creditedAccountId: id },
+    });
+    
+    return [...credited, ...debited];
+  }
 } 

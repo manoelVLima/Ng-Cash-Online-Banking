@@ -35,4 +35,9 @@ export default class UserService {
     const transaction = await this.model.newTransaction({ id, username, value });
     return transaction;
   }
+
+  public async getTransactionsById(id:number) {
+    const transactions = await this.model.getTransactionsById(id);
+    return transactions;
+  }
 }
