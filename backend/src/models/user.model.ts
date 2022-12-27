@@ -29,7 +29,6 @@ export default class UserModel {
       ]);
       return result;
     } catch (error) {
-      console.log(error);
       return null;
     }
   }
@@ -51,26 +50,39 @@ export default class UserModel {
   }
 
   public async newTransaction({ id, username, value }: Transaction) {
-    const senderAccount = await this.prisma.account.findUnique({ where: { id } });
-    const receiverAccount = await this.prisma.user.findUnique({ where: { username } }).Account();
+    try {
+      return await this.prisma.$transaction(async () => {
+        const senderAccount = await this.prisma.account.findUnique({ where: { id } });
+        const receiverAccount = await this.prisma.user.findUnique({ where: { 
+          username } }).Account();
+
+        if (!senderAccount || !receiverAccount) {
+          throw new Error('Invalid sender or receiver account');
+        }
+
+        const transaction = await this.prisma.transaction.create({
+          data: {
+            debitedAccountId: senderAccount.id,
+            creditedAccountId: receiverAccount.id,
+            value,
+          },
+        });
     
-    const newTransaction = await this.prisma.transaction.create({
-      data: {
-        debitedAccountId: Number(senderAccount?.id),
-        creditedAccountId: Number(receiverAccount?.id),
-        value,
-      },
-    });
-    // atualiza a conta de quem enviou
-    await this.prisma.account.update({
-      where: { id: Number(senderAccount?.id) },
-      data: { balance: Number(senderAccount?.balance) - Number(value) },
-    });
-    // atualiza a conta de quem recebeu
-    await this.prisma.account.update({
-      where: { id: Number(receiverAccount?.id) },
-      data: { balance: Number(receiverAccount?.balance) + Number(value) },
-    });
-    return newTransaction;
+        await this.prisma.account.update({
+          where: { id: senderAccount.id },
+          data: { balance: { decrement: value } },
+        });
+
+        await this.prisma.account.update({
+          where: { id: receiverAccount.id },
+          data: { balance: { increment: value } },
+        });
+
+        return transaction;
+      });
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 } 

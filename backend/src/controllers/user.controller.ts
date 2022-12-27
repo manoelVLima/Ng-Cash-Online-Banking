@@ -51,6 +51,9 @@ export default class UserController {
         
     const { username, value } = req.body;
     const transaction = await this.service.newTransaction({ id, username, value });
+
+    if (!transaction) return res.status(400).json({ message: 'Transaction failed' });
+
     return res.status(200).json(transaction);
   }
 }
